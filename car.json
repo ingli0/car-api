@@ -1,0 +1,9 @@
+{
+    "Brand": "ingli",
+    "Model": "boja",
+    "year": 21,
+    "kilometers" : 123000,
+    "price": 30000,
+    "Category" : "Suv",
+    "Fuel": "Gas"
+}
