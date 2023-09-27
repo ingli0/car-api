@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
 import carsRoutes from './routes/cars.js';
 import Car from './models/carModel.js';
+import User from './models/userModel.js'; // Use ES Modules syntax
 
 
 const app = express();

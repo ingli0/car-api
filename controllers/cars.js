@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import Car from '../models/carModel.js'; // Import your Mongoose Car model
+import { validationResult } from 'express-validator';
+
 
 export const createCar = async (req, res) => {
     const carData = req.body;
@@ -12,6 +14,8 @@ export const createCar = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
+
+
 
 export const getCar = async (req, res) => {
     const { id } = req.params;
