@@ -1,72 +1,67 @@
 import { v4 as uuidv4 } from 'uuid';
+import Car from '../models/carModel.js'; // Import your Mongoose Car model
 
-let cars = [
-    {"Brand": "ingli",
-    "Model": "boja",
-    "year": 21,
-    "kilometers" : 123000,
-    "price": 30000,
-    "Category" : "Suv",
-    "Fuel": "Gas"}
-];
+export const createCar = async (req, res) => {
+    const carData = req.body;
 
-export const  createCar =  (req, res) => {
-    const car = req.body;
-    cars.push({... car, id: uuidv4()});
-    console.log(car);
-    res.send(`Car with the name ${car.Brand} added to the database`);
+    try {
+        const car = new Car(carData);
+        await car.save();
+        res.status(201).json(car);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 }
 
-export const getCar =  (req,res)=>{
+export const getCar = async (req, res) => {
     const { id } = req.params;
 
-    const foundcar = cars.find((car)=> car.id == id );
-    res.send(foundcar);
+    try {
+        const car = await Car.findById(id);
+        if (!car) {
+            return res.status(404).json({ message: 'Car not found' });
+        }
+        res.status(200).json(car);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 
-export const deleteCar =  (req, res)=>{
-    const {id} = req.params;
-    cars = cars.filter((car)=> car.id != id);
-    res.send(`Car with the id ${id} deleted from database`);
-}
-
-export const updateCar = (req, res) => {
+export const deleteCar = async (req, res) => {
     const { id } = req.params;
-    const updatedCarData = req.body; // Assuming req.body contains the updated car data
 
-    const car = cars.find((car) => car.id == id);
-
-    if (!car) {
-        return res.status(404).send(`Car with ID ${id} not found`);
+    try {
+        const car = await Car.findByIdAndRemove(id);
+        if (!car) {
+            return res.status(404).json({ message: 'Car not found' });
+        }
+        res.status(200).json({ message: 'Car deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-
-    // Check and update each property if present in the request body
-    if (updatedCarData.Brand) {
-        car.Brand = updatedCarData.Brand;
-    }
-    if (updatedCarData.Model) {
-        car.Model = updatedCarData.Model;
-    }
-    if (updatedCarData.year) {
-        car.year = updatedCarData.year;
-    }
-    if (updatedCarData.kilometers) {
-        car.kilometers = updatedCarData.kilometers;
-    }
-    if (updatedCarData.price) {
-        car.price = updatedCarData.price;
-    }
-    if (updatedCarData.Category) {
-        car.Category = updatedCarData.Category;
-    }
-    if (updatedCarData.Fuel) {
-        car.Fuel = updatedCarData.Fuel;
-    }
-
-    res.send(`Car with ID ${id} has been updated`);
-};
-
-export const getCars = (req,res)=>{
-    console.log(cars);
-    res.send(cars);
 }
+
+export const updateCar = async (req, res) => {
+    const { id } = req.params;
+    const updatedCarData = req.body;
+
+    try {
+        const car = await Car.findByIdAndUpdate(id, updatedCarData, { new: true });
+        if (!car) {
+            return res.status(404).json({ message: 'Car not found' });
+        }
+        res.status(200).json(car);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getCars = async (req, res) => {
+    try {
+        const cars = await Car.find();
+        res.status(200).json(cars);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+    
