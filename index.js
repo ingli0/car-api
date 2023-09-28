@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
@@ -10,10 +13,16 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 import ejs from 'ejs';  
 import bcrypt from 'bcrypt';
+import { initialize } from './passport-config.js'; // Import the initialize function
+import flash from 'express-flash';
+import expressSession from 'express-session'; 
 
 
+initialize(passport, email => users.find(user => user.email == email),
+ id =>users.find(user => user.id === id)
+ )
 
-    
+
 
 const app = express();
 const PORT = 5000;
@@ -23,10 +32,13 @@ const users = []
 app.set('view engine', 'ejs');
 
 app.use(session({
-    secret: 'ingli',  
+    secret: process.env.session_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true
 }));
+
+app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({extended: false}))
@@ -54,14 +66,26 @@ app.get('/login', (req, res) => {
 app.get('/login', (req, res) => {
     res.render('login');
 });
+app.get('/login', (req, res) => {
+    // Check if there are flash messages and pass them to the template
+    const messages = req.flash('error');
+    res.render('login', { messages }); // Pass the messages variable to the template
+});
+
+
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
 
  
 app.get('/register', (req, res) => {
     res.render('register');
 });
 
+app.use(flash())
  
-
 /* Specify that it will use JSON */
 app.use(bodyParser.json());
 
@@ -75,26 +99,12 @@ app.listen(PORT, () => console.log(`Server is running on port : http://localhost
 
 app.post('/register', async (req, res) => {
     try {
-        console.log('Username:', req.body.username); 
-        console.log('Password:', req.body.password);  
-        console.log('Enail:', req.body.email);  
-        const newUser = new User({
-            username: req.body.username,  
-            password: req.body.password, 
-            email: req.body.email, 
-        });
-
-        
-        const hashedPassword = await bcrypt.hash(newUser.password, 10);
-        newUser.password = hashedPassword;
-
-         
+        const { username, password, email } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, password: hashedPassword, email });
         await newUser.save();
-
-        // Redirect to the login page after successful registration
         res.redirect('/login');
     } catch (error) {
-        // Handle registration errors here
         console.error(error);
         res.redirect('/register');
     }
