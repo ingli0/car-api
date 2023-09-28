@@ -5,6 +5,9 @@ import { createCar,getCar,deleteCar,updateCar,getCars} from '../controllers/cars
 
 const router = express.Router();
  
+router.get('/dashboard', (req, res) => {
+    res.render('dashboard');
+});
 
 router.get('/',getCars);
 
@@ -17,6 +20,23 @@ const createCarValidation = [
     body('Category').notEmpty().withMessage('Category is required'),
     body('Fuel').notEmpty().withMessage('Fuel is required'),
 ];
+
+const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next(); // User is authenticated, proceed to the next middleware
+    }
+    res.redirect('/login'); // User is not authenticated, redirect to login
+}
+
+// Example protected route
+router.get('/dashboard', ensureAuthenticated, (req, res) => {
+    // Render the dashboard for authenticated users
+    res.render('dashboard');
+});
+
+// Route for handling user registration
+
+
 
 router.post('/',createCar);
 
