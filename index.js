@@ -13,16 +13,13 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 import ejs from 'ejs';  
 import bcrypt from 'bcrypt';
-import { initialize } from './passport-config.js'; // Import the initialize function
+import { initialize } from './passport-config.js';  
 import flash from 'express-flash';
-import expressSession from 'express-session'; 
-
+ 
 
 initialize(passport, email => users.find(user => user.email == email),
  id =>users.find(user => user.id === id)
  )
-
-
 
 const app = express();
 const PORT = 5000;
@@ -41,44 +38,44 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({ extended: false }));
 
 
-// Configure the local authentication strategy
-passport.use(new LocalStrategy((username, password, done) => {
-    // Replace with your user authentication logic
-    if (username === 'user' && password === 'password') {
-        return done(null, { id: 1, username: 'user' });
-    } else {
-        return done(null, false, { message: 'Incorrect username or password' });
-    }
-}));
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
  
  
 app.get('/', (req, res) => res.redirect('/login'));
-
+app.get('/login', (req, res) => {
+    res.render('login', { message: req.flash('error') }); 
+  });
+  
 app.get('/login', (req, res) => {
     res.render('login');
-});
+  });
+  
+  app.get('/dashboard', (req, res) => {
+    if (!req.isAuthenticated()) {
+      
+      return res.redirect('/login');
+    }
+    
+     
+    res.render('dashboard', { user: req.user });
+  });
+  
 
-app.get('/login', (req, res) => {
-    res.render('login');
-});
-app.get('/login', (req, res) => {
-    // Check if there are flash messages and pass them to the template
-    const messages = req.flash('error');
-    res.render('login', { messages }); // Pass the messages variable to the template
-});
-
-
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
+  app.post('/login', passport.authenticate('local', {
+    successRedirect: '/dashboard',  
+    failureRedirect: '/login', 
     failureFlash: true
-}));
+  }));
+ 
+ 
+ 
 
+  
  
 app.get('/register', (req, res) => {
     res.render('register');
@@ -86,14 +83,18 @@ app.get('/register', (req, res) => {
 
 app.use(flash())
  
-/* Specify that it will use JSON */
 app.use(bodyParser.json());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/cars', carsRoutes);
 
-app.get('/', (req, res) => res.send('hello from home page'));
+app.get('/', (req, res) => {
+     const successMessage = req.flash('success');
+    res.render('home', { successMessage });  
+});
+
+
 
 app.listen(PORT, () => console.log(`Server is running on port : http://localhost:${PORT}`));
 
@@ -110,6 +111,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
+ 
 mongoose.set("strictQuery",false)
 mongoose.connect('mongodb+srv://admin:admin@carapi.d3ibeak.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp')
     .then(() =>{
