@@ -5,6 +5,8 @@ import { validationResult } from 'express-validator';
 
 export const createCar = async (req, res) => {
     const carData = req.body;
+    
+     carData.username = req.body.username;
 
     try {
         const car = new Car(carData);
@@ -14,6 +16,7 @@ export const createCar = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
+
 
 
 

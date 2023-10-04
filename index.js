@@ -111,7 +111,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
- 
+
 mongoose.set("strictQuery",false)
 mongoose.connect('mongodb+srv://admin:admin@carapi.d3ibeak.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp')
     .then(() =>{

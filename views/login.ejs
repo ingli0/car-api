@@ -19,5 +19,16 @@
         <br>
         <button type="submit">Login</button>
     </form>
+    <button id="Register">Register</button>
+
+    <script>
+        // JavaScript code to change the href of the button
+        const button = document.getElementById('Register');
+
+        button.addEventListener('click', () => {
+            // Redirect to the "/register" URL
+            window.location.href = '/register';
+        });
+    </script>
 </body>
 </html>

@@ -23,19 +23,18 @@ const createCarValidation = [
 
 const ensureAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
-        return next(); // User is authenticated, proceed to the next middleware
+        return next();  
     }
-    res.redirect('/login'); // User is not authenticated, redirect to login
+    res.redirect('/login');  
 }
 
-// Example protected route
+ 
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
-    // Render the dashboard for authenticated users
+    
     res.render('dashboard');
 });
 
-// Route for handling user registration
-
+ 
 
 
 router.post('/',createCar);

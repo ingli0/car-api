@@ -7,5 +7,37 @@
     <h1>Welcome, <%= user.username %></h1>
     <p>This is your dashboard.</p>
     <a href="/logout">Logout</a>
+    <form action="/cars" method="POST">
+        <input type="hidden" name="username" value="<%= user.username %>"
+        <div>
+            <label for="Brand">Brand:</label>
+            <input type="text" id="Brand" name="Brand" required>
+        </div>
+        <div>
+            <label for="Model">Model:</label>
+            <input type="text" id="Model" name="Model" required>
+        </div>
+        <div>
+            <label for="year">Year:</label>
+            <input type="number" id="year" name="year" required>
+        </div>
+        <div>
+            <label for="kilometers">Kilometers:</label>
+            <input type="number" id="kilometers" name="kilometers" required>
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required>
+        </div>
+        <div>
+            <label for="Category">Category:</label>
+            <input type="text" id="Category" name="Category" required>
+        </div>
+        <div>
+            <label for="Fuel">Fuel:</label>
+            <input type="text" id="Fuel" name="Fuel" required>
+        </div>
+        <button type="submit">Add Car</button>
+    </form>
 </body>
 </html>
