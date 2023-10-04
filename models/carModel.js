@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 
  
 const carSchema = new mongoose.Schema({
-    
+    user: {
+        type: String,
+        ref: 'User',
+        required: true,
+    },
     Brand: {
         type: String,
         required: [true, 'Please add the Brand']
